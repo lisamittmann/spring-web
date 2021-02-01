@@ -10,23 +10,36 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("student")
 public class StudentController {
 
-    @GetMapping
-    public ArrayList<Student> getStudent(){
+    public final StudentService studentService = new StudentService();
 
-        return new StudentService().getStudentList();
+    @GetMapping
+    public List<Student> getStudent(@RequestParam Optional<String> q){
+
+        return studentService.getStudentList(q.orElse(""));
     }
 
     @GetMapping("{id}")
     public Student getSingleStudent(@PathVariable String id){
 
-        return new StudentService().getStudent(id).orElseThrow(() ->
+        return studentService.getStudent(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT));
 
+    }
+
+    @PutMapping
+    public Student addStudent(@RequestBody Student student){
+        return studentService.addStudent(student);
+    }
+
+    @DeleteMapping
+    public Student deleteStudent(@RequestBody Student student) {
+        return studentService.deleteStudent(student);
     }
 
 }
